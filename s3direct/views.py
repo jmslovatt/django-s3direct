@@ -1,4 +1,6 @@
 import json
+import os
+import time
 
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
@@ -14,6 +16,10 @@ DESTINATIONS = getattr(settings, 'S3DIRECT_DESTINATIONS', None)
 def get_upload_params(request):
     content_type = request.POST['type']
     filename = request.POST['name']
+
+    if settings.S3DIRECT_APPEND_TIMESTAMP:
+        name, extension = os.path.splitext(filename)
+        filename = "%s_%s%s" %(name, int(time.time()), extension)
 
     dest = DESTINATIONS.get(request.POST['dest'])
 
